@@ -57,6 +57,7 @@
 
 <!-- Latest compiled JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="assets/js/ICD9.js"></script>
 <script type="text/javascript">
 
 
@@ -128,8 +129,30 @@ $('.Hosp_locteach').click(function(){
 
 $('#add').click(function(){
         var variable = $("#add_variable").val().trim();
-        var variable_trim = variable.replace(/\./g,'');
-        variable_trim = variable_trim.trim();
+        var variable_trim;
+        if (variable.length ==3){
+          variable_trim = variable;
+        // if(variable.lenght> 3 && variable.lenght<7)
+        }else{
+          // var match = /(\d|[a-z]|[A-z]){3}.(\d|[a-z]|[A-z])*/.exec(variable);
+        // var match = variable.match(/(\d|[a-z]|[A-z]){3}\.(\d|[a-z]|[A-z])*/);
+        var match = /(\d|[a-z]|[A-z])(\d|[a-z]|[A-z])(\d|[a-z]|[A-z])\.(\d|[a-z]|[A-z])*/.exec(variable)
+
+          
+          if (match){
+            match = match[0].toString()
+            console.log(match);
+            console.log(match.length);
+          if (match.length == variable.length){
+            variable_trim = variable.replace(/\./g,'');
+            variable_trim = variable_trim.trim();
+
+          }
+          }
+
+
+        }
+        
         var douplication = 0;
         if (variable_trim) {
             for (i in x['other_variables']) {
@@ -140,17 +163,30 @@ $('#add').click(function(){
             }
         if (douplication == 1) {
             alert(variable + ' is already added!')
-        } else {        
+        } else {
+            var validCode;        
+            for (i in ICD9) {
+                if (variable_trim.toString() == ICD9[i].toString()) {
+                  validCode = 1;
+                  break;
+                }
+              }
+            if (!validCode){
+              alert(variable + ' is not valid!');
+              return;
+            }
+                    
 
             x['other_variables'].push(variable_trim);
             var id = variable_trim;
             var div = $('<div style="padding: 0px; margin:0px;" class="variables" ></div>');
             div.css('margin', 5);
-            var lbl = $('<label id = ' + id + ' class="btn btn-warning variables"><span class="glyphicon glyphicon-remove variables"></span> ' + variable + '</label>')
+            var lbl = $('<label id = ' + id + ' class="btn btn-warning variables glyphicon glyphicon-remove"></span>&nbsp; ' + variable +" : "+ICD9Obj[variable_trim] + '</label>');
+            // <span class="glyphicon glyphicon-remove variables">
             lbl.attr('id', id);
             lbl.data('variable', variable_trim);
             lbl.data('montage', 'EKG');
-            lbl.css('width', 150);
+            lbl.css('width', 300);
             lbl.css('text-align', 'center');
             div.append(lbl);
             $('#v_list').append(div);
