@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+</head>
+<body>
+
+<input type="radio" name="gender" value="0"  class="gender" checked> Male<br>
+<input type="radio" name="gender" class="gender" value="1"> Female<br>
+<br>
+<input id="age" type="number" value="20" min="18" max="100" placeholder="20">
+<br>
+<br>
+<select class="Race">
+  <option   value="0">white</option>
+  <option  value="1">black</option>
+  <option  value="2">Hispanic</option>
+  <option  value="3">other</option>
+</select>
+<br>
+<br>
+<select class="PAY1">
+  <option   value="0">Medicare</option>
+  <option  value="1">Medicaid</option>
+  <option  value="2">Private insurance</option>
+  <option  value="3">Other</option>
+</select>
+<br>
+<br>
+<select class="HOSP_BEDSIZE">
+  <option   value="0">small</option>
+  <option  value="1">medium</option>
+  <option  value="2">large</option>
+</select>
+<br>
+<br>
+<select class="Hosp_locteach">
+  <option   value="0">rural</option>
+  <option  value="1">urban non-teaching</option>
+  <option  value="2">urban teaching</option>
+</select>
+<br>
+<br>
+<input type="text" id="add_variable" name="add"  autocomplete="off">
+<button id="add" >Add</button>
+<br>
+<br>
+<div id="v_list"></div>
+<br>
+<br>
+	<button id="predict_btn" style="height: 100px;width: 100px;">Predict</button>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+
+
+var x = {
+"AGE_bin":1,
+"FEMALE":0,
+'Race':0,
+'PAY1':0,
+'HOSP_BEDSIZE':0,
+'Hosp_locteach':0,
+  "other_variables": []
+
+};
+
+$('.gender').click(function(){
+            var gender = $("input[name='gender']:checked").val();
+            x['FEMALE'] = gender;
+});
+
+$("#age").change(function(){
+  var age = $(this).val();
+  if (age >= 80){
+    x["AGE_bin"] = 6;
+    return
+  }
+  if (age >= 70){
+    x["AGE_bin"] = 5;
+    return
+  }
+  if (age >= 60){
+    x["AGE_bin"] = 4;
+    return
+  }
+  if (age >= 50){
+    x["AGE_bin"] = 3;
+    return
+  }
+  if (age >= 40){
+    x["AGE_bin"] = 2;
+    return
+  }
+  if (age >= 30){
+    x["AGE_bin"] = 1;
+    return
+  }
+  if (age >= 18){
+    x["AGE_bin"] = 0;
+    return
+  } 
+});
+
+$('.Race').click(function(){
+            var Race = $(this).val();
+            x['Race'] = Race;
+});
+$('.PAY1').click(function(){
+            var PAY1 = $(this).val();
+            x['PAY1'] = PAY1;
+});
+
+$('.HOSP_BEDSIZE').click(function(){
+            var HOSP_BEDSIZE = $(this).val();
+            x['HOSP_BEDSIZE'] = HOSP_BEDSIZE;
+});
+$('.Hosp_locteach').click(function(){
+            var HOSP_BEDSIZE = $(this).val();
+            x['HOSP_BEDSIZE'] = HOSP_BEDSIZE;
+});
+
+$('#add').click(function(){
+        var variable = $("#add_variable").val().trim();
+        var variable_trim = variable.replace(/\./g,'');
+        variable_trim = variable_trim.trim();
+        var douplication = 0;
+        if (variable_trim) {
+            for (i in x['other_variables']) {
+                if (variable_trim.toString() == x['other_variables'][i].toString()) {
+                    douplication = 1;
+                    break;
+                }
+            }
+        if (douplication == 1) {
+            alert(variable + ' is already added!')
+        } else {        
+
+            x['other_variables'].push(variable_trim);
+            var id = variable_trim;
+            var div = $('<div style="padding: 0px; margin:0px;" class="variables" ></div>');
+            div.css('margin', 5);
+            var lbl = $('<label id = ' + id + ' class="btn btn-warning variables"><span class="glyphicon glyphicon-remove variables"></span> ' + variable + '</label>')
+            lbl.attr('id', id);
+            lbl.data('variable', variable_trim);
+            lbl.data('montage', 'EKG');
+            lbl.css('width', 150);
+            lbl.css('text-align', 'center');
+            div.append(lbl);
+            $('#v_list').append(div);
+        }
+      }
+});
+
+
+$(document).on('click', '.variables', function() {
+  var variable = $(this).data('variable');
+  var index = x['other_variables'].indexOf(variable);
+  if (index > -1) {
+    x['other_variables'].splice(index, 1);
+    $(this).remove();
+}
+});
+
+        // // if (douplication == 1) {
+        // //     alert(lbl + ' is already exist in the montage')
+        // // } else {
+
+        //     var id = create_modal_montage_id_code(ch, '_EKG');
+        //     li = $('<li style="padding: 0px; margin:0px;" class="montageWindowName" ></li>');
+        //     li.css('margin-top', 5);
+        //     li.css('margin-bottom', 5);
+
+        //     var Chlbl = $('<label id = ' + id + ' class="btn btn-success montageall"><input type="radio" name="montageall"  autocomplete="off">' + lbl + '</label>')
+        //     Chlbl.attr('id', id);
+        //     Chlbl.data('ch', ch);
+        //     Chlbl.data('montage', 'EKG');
+        //     Chlbl.css('width', 225);
+
+        //     Chlbl.css('padding-left', 0);
+        //     Chlbl.css('text-align', 'left');
+
+        //     Chlbl.data('RawId', id);
+        //     if (lbl > 27) {
+        //         Chlbl.css('font-size', 9);
+        //     } else if (lbl > 23) {
+        //         Chlbl.css('font-size', 11);
+        //     } else {
+        //         Chlbl.css('font-size', 13);
+        //     };
+        //     if (ch_in_montage == 0) {
+        //         Chlbl.addClass('EKGDeactivate');
+        //         Chlbl.css("color", '#222222');
+        //     }
+        //     li.append(Chlbl);
+
+        //     $('#montage_EKG_list').append(li);
+
+        //     if (update_montage == 1) {
+        //         montagedata.push(ch);
+
+
+            
+// });
+
+var url = "https://mortality-spinal-epidural.herokuapp.com/predict_probability";
+// url = "http://127.0.0.1:5000/predict_probability";
+$("#predict_btn").click(function(){
+
+        $.ajax({
+            type: 'post',
+            url: url,
+            data: JSON.stringify(x),
+            contentType: "application/json; charset=utf-8",
+            traditional: true,
+            success: function (data) {
+                console.log(data)
+            }
+        });
+
+
+});
+
+
+
+
+</script>
+</body>
+</html>
+
+
